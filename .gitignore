@@ -1,0 +1,17 @@
+# Python sanal ortamı
+.venv/
+
+# Python geçici dosyaları
+__pycache__/
+*.py[cod]
+
+# Gizli anahtarlar
+.env
+
+# Büyük veri ve model dosyaları
+data/raw/
+data/processed/
+artifacts/
+
+# Jupyter geçici dosyaları
+.ipynb_checkpoints/
