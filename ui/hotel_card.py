@@ -23,8 +23,9 @@ class HotelCard:
                 )
 
                 st.write(
-                    f"📍 {destination} · "
-                    #f"{hotel.hotel_class} yıldızlı otel"
+                    f"📍 {hotel.city} · "
+                    f" 🟢 {destination} · "
+                    f"{hotel.hotel_class} yıldızlı otel"
                 )
 
             with rating_column:
@@ -60,7 +61,7 @@ class HotelCard:
             )
 
             st.write(
-                f"**Neden önerildi?** {hotel.reason}"
+                f"**Neden önerildi?** {hotel.title}"
             )
 
             with st.expander(
@@ -68,5 +69,5 @@ class HotelCard:
             ):
 
                 st.markdown(
-                    f"> “{hotel.title}”"
+                    f"> “{hotel.text}”"
                 )

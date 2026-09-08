@@ -18,7 +18,7 @@ class Sidebar:
                 "Önerilecek otel sayısı",
                 1,
                 5,
-                5,
+                20,
             )
 
             minimum_rating = st.slider(

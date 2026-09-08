@@ -143,15 +143,23 @@ class RecommendationEngine:
             offering_id=int(metadata["offering_id"]),
 
             name=str(metadata["name"]),
-
+            
+            city=str(metadata["city"]),
+            
             overall_rating=float(
                 metadata["overall_rating"]
             ),
 
+            hotel_class=float(metadata["hotel_class"]),
+                    
             title=str(
                 metadata.get("title", "")
             ),
 
+            text=str(
+                metadata.get("text", "")
+            ),
+            
             match=float(score),
 
             reason=(
