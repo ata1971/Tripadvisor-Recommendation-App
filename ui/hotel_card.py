@@ -24,17 +24,17 @@ class HotelCard:
 
                 st.write(
                     f"📍 {destination} · "
-                    f"{hotel.hotel_class} yıldızlı otel"
+                    #f"{hotel.hotel_class} yıldızlı otel"
                 )
 
             with rating_column:
 
                 st.metric(
                     "Kullanıcı puanı",
-                    f"{hotel.rating:.1f}/5",
+                    f"{hotel.overall_rating:.1f}/5",
                 )
 
-            filled_circles = "●" * round(hotel.rating)
+            filled_circles = "●" * round(hotel.overall_rating)
 
             st.markdown(
                 f"""
@@ -49,9 +49,14 @@ class HotelCard:
                 unsafe_allow_html=True,
             )
 
+            match_percentage = max(
+                0.0,
+                min(100.0, hotel.match * 100)
+            )
+
             st.progress(
-                hotel.match / 100,
-                text=f"%{hotel.match} tercih uyumu",
+                match_percentage / 100,
+                text=f"%{match_percentage:.1f} tercih uyumu",
             )
 
             st.write(
@@ -63,5 +68,5 @@ class HotelCard:
             ):
 
                 st.markdown(
-                    f"> “{hotel.review}”"
+                    f"> “{hotel.title}”"
                 )

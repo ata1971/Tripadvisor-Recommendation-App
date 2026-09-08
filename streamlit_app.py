@@ -1,7 +1,10 @@
 import streamlit as st
 
-from data.hotel_repository import HotelRepository
+from services.embedding_service import EmbeddingService
+from services.vector_search_service import VectorSearchService
+from services.metadata_service import MetadataService
 from services.recommendation_engine import RecommendationEngine
+
 from utils.session_manager import SessionManager
 
 from ui.styles import StyleManager
@@ -10,18 +13,53 @@ from ui.search_form import SearchForm
 from ui.results_view import ResultsView
 
 
+@st.cache_resource
+def load_services():
+
+    print("Loading hotel recommendation resources...")
+
+    # Sentence Transformer
+    embedding_service = EmbeddingService()
+
+    # FAISS
+    vector_search_service = VectorSearchService(
+        index_path="data/hotel_multilingual_faiss.index"
+    )
+    vector_search_service.load()
+
+    # Metadata
+    metadata_service = MetadataService(
+        metadata_path="data/hotel_metadata.pkl"
+    )
+    metadata_service.load()
+
+    # Recommendation Engine
+    engine = RecommendationEngine(
+        embedding_service=embedding_service,
+        vector_search_service=vector_search_service,
+        metadata_service=metadata_service,
+    )
+
+    print("Hotel recommendation resources loaded.")
+
+    return engine
+
+
 class HotelRecommendationApp:
 
     def __init__(self):
 
-        self.repository = HotelRepository()
+        # --------------------------------
+        # Cached Services
+        # --------------------------------
 
-        self.engine = RecommendationEngine(
-            self.repository
-        )
+        self.engine = load_services()
+
+        # --------------------------------
+        # UI
+        # --------------------------------
 
         self.session = SessionManager()
-
         self.sidebar = Sidebar()
         self.search_form = SearchForm()
         self.results_view = ResultsView()
@@ -35,17 +73,12 @@ class HotelRecommendationApp:
             initial_sidebar_state="expanded",
         )
 
-    def validate_input( 
-        self,
-        destination,
-        query,
-    ):
+    def validate_input(self, destination, query):
 
         if not destination.strip():
 
             st.warning(
-                "Lütfen sol panelden gitmek istediğiniz "
-                "yeri yazın."
+                "Lütfen gitmek istediğiniz yeri yazın."
             )
 
             self.session.clear_recommendations()
@@ -64,31 +97,29 @@ class HotelRecommendationApp:
 
         return True
 
-    def handle_search(
-        self,
-        filters,
-        query,
-    ):
+    def handle_search(self, filters, query):
 
-        recommendations = self.engine.recommend(
-            query=query,
-            destination=filters["destination"],
-            recommendation_count=filters[
-                "recommendation_count"
-            ],
-            minimum_rating=filters[
-                "minimum_rating"
-            ],
-            hotel_classes=filters[
-                "hotel_classes"
-            ],
-        )
+        with st.spinner(
+            "Size uygun oteller aranıyor..."
+        ):
+
+            recommendations = self.engine.recommend(
+                query=query,
+                recommendation_count=filters[
+                    "recommendation_count"
+                ],
+                minimum_rating=filters[
+                    "minimum_rating"
+                ],
+                hotel_classes=filters[
+                    "hotel_classes"
+                ],
+            )
 
         if not recommendations:
 
             st.info(
-                "Seçtiğiniz filtrelere uygun örnek otel "
-                "bulunamadı."
+                "Seçtiğiniz kriterlere uygun otel bulunamadı."
             )
 
         self.session.save_search(
@@ -135,12 +166,7 @@ class HotelRecommendationApp:
         )
 
 
-# ============================================================
-# ENTRY POINT
-# ============================================================
-
 if __name__ == "__main__":
 
     app = HotelRecommendationApp()
-
     app.run()
