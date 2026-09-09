@@ -23,7 +23,7 @@ def load_services():
 
     # FAISS
     vector_search_service = VectorSearchService(
-        index_path="data/hotel_multilingual_faiss.index"
+        index_path="data/hotel_multilingual_faiss_normalized.index"
     )
     vector_search_service.load()
 
@@ -105,6 +105,7 @@ class HotelRecommendationApp:
 
             recommendations = self.engine.recommend(
                 query=query,
+                destination=filters["destination"],
                 recommendation_count=filters[
                     "recommendation_count"
                 ],
