@@ -11,6 +11,8 @@ __pycache__/
 # Büyük veri ve model dosyaları
 data/raw/
 data/processed/
+data/*.pkl
+data/*.index
 artifacts/
 
 # Jupyter geçici dosyaları
